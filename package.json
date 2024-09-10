@@ -1,0 +1,15 @@
+{
+  "name": "@lu-kk/sentry-mini-program",
+  "version": "1.0.0",
+  "main": "lib/index.umd.js",
+  "module": "lib/index.esm.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "rollup -c build/rollup.config.js",
+    "pub:dev": "npm publish --tag beta",
+    "pub": "npm publish"
+  },
+  "dependencies": {
+    "rollup": "^4.21.2"
+  }
+}
