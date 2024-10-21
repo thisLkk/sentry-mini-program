@@ -165,7 +165,7 @@ export function wrap(
   return sentryWrapped;
 }
 
-let debounceTimer: number = 0;
+let debounceTimer: any = 0;
 
 /**
  * Wraps addEventListener to capture UI breadcrumbs

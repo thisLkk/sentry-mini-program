@@ -31,10 +31,10 @@ export default {
     // },
   ],
   plugins: [
+    json(),
     typescript({
       tsconfig: "./tsconfig.json",
     }),
     resolve(),
-    json()
   ]
 };

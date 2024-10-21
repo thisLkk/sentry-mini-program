@@ -8,5 +8,6 @@
     "target": "es5",
     "sourceMap": true,
     "esModuleInterop": true,
+    "ignoreDeprecations": "5.0",
   }
 }

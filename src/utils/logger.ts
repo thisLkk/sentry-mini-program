@@ -21,7 +21,7 @@ export class Logger {
     }
     private static logInner(msg: string | any, level: string, subst: any[] = []) {
         // let timeStr = this.getDateString();
-        let log = `【*${SDK_TAG}* [${level}]】${msg} ==>`
+        let log = `【*${SDK_TAG}* ${this.namespace} [${level}]】${msg} ==>`
         // if (subst && subst.length > 0) {
         //     subst.forEach(element => {
         //         if (element instanceof Error) {

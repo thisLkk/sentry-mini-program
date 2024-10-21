@@ -2,7 +2,6 @@ import { addGlobalEventProcessor, getCurrentHub } from "@sentry/core";
 import { Event, Integration } from "@sentry/types";
 
 import { Platform } from "../platform";
-import { Logger } from "../utils/logger";
 
 /** UserAgent */
 export class System implements Integration {
@@ -20,7 +19,6 @@ export class System implements Integration {
    * @inheritDoc
    */
   public setupOnce(): void {
-    Logger.log('System setupOnce', ['init']);
     addGlobalEventProcessor((event: Event) => {
       if (getCurrentHub().getIntegration(System)) {
         try {

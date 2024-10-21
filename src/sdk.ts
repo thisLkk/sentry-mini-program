@@ -1,7 +1,6 @@
 import { initAndBind, Integrations as CoreIntegrations, } from "@sentry/core";
 import { MiniappOptions } from "./backend";
 import { MiniappClient } from "./client";
-import { Logger } from "./utils/logger";
 import { Platform } from "./platform";
 
 import {
@@ -26,7 +25,6 @@ export const defaultIntegrations = [
 ];
 
 export function init(options: MiniappOptions = {}): void {
-  Logger.init(options.environment !== 'production');
   Platform.getInstance(options.platform);
   if (options.defaultIntegrations === undefined) {
     options.defaultIntegrations = defaultIntegrations;
@@ -34,5 +32,5 @@ export function init(options: MiniappOptions = {}): void {
   // https://github.com/lizhiyao/sentry-miniapp/issues/23
   options.normalizeDepth = options.normalizeDepth || 5;
   initAndBind(MiniappClient, options);
-  Logger.log('Sentry Mini Program', ['SDK init success']);
+  console.log('【Sentry-mini-program】SDK init success');
 }

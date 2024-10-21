@@ -1,5 +1,3 @@
-import { Logger } from "../utils/logger";
-
 declare const wx: any; // 微信小程序、微信小游戏
 declare const tt: any; // 字节小程序
 export type PlatformOptions = "tt" | "weapp" | "xhs" | "kwai" | "swan" | "alipay" | "h5" | "rn" | "quickapp" | "qq" | "jd"; // 扩展平台选项
@@ -35,7 +33,7 @@ export class Platform {
     } else {
       throw new Error("***sentry-miniprogram*** 暂不支持此平台");
     }
-    Logger.log(`当前Sentry运行环境为: `, [Platform._appName, Platform._SDK]);
+    console.log(`【Sentry-mini-program】当前运行环境为: `, Platform._appName, Platform._SDK);
   };
 
   private static setupUserPlatform = (options: PlatformOptions) => {
@@ -48,7 +46,7 @@ export class Platform {
     } else {
       throw new Error("***sentry-miniprogram*** 暂不支持此平台");
     }
-    Logger.log(`当前Sentry运行环境为: `, [Platform._appName, Platform._SDK]);
+    console.log(`【Sentry-mini-program】当前运行环境为: `, Platform._appName, Platform._SDK);
   };
 
   private static initSDK(options?: PlatformOptions): void {
