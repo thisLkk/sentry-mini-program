@@ -3,7 +3,6 @@ import { Event, EventHint, Exception, ExtendedError, Integration } from '@sentry
 
 import { exceptionFromStacktrace } from '../parsers';
 import { computeStackTrace } from '../tracekit';
-import { Logger } from '../utils/logger';
 
 const DEFAULT_KEY = 'cause';
 const DEFAULT_LIMIT = 5;
@@ -34,7 +33,6 @@ export class LinkedErrors implements Integration {
    * @inheritDoc
    */
   public constructor(options: { key?: string; limit?: number } = {}) {
-    Logger.log('LinkedErrors constructor', ['init']);
     this._key = options.key || DEFAULT_KEY;
     this._limit = options.limit || DEFAULT_LIMIT;
   }

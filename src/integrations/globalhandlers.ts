@@ -1,7 +1,6 @@
 import { getCurrentHub } from "@sentry/core";
 import { Integration } from "@sentry/types";
 import { Platform } from "../platform";
-import { Logger } from "../utils/logger";
 interface GlobalHandlersIntegrations {
   onerror: boolean;
   onunhandledrejection: boolean;
@@ -19,7 +18,6 @@ export class GlobalHandlers implements Integration {
   private _onPageNotFoundHandlerInstalled: boolean = false;
   private _onMemoryWarningHandlerInstalled: boolean = false;
   public constructor(options?: GlobalHandlersIntegrations) {
-    Logger.log('GlobalHandlers constructor', ['init']);
     this._options = {
       onerror: true,
       onunhandledrejection: true,
