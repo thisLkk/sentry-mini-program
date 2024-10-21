@@ -1,7 +1,8 @@
 import { addGlobalEventProcessor, getCurrentHub } from "@sentry/core";
 import { Event, Integration } from "@sentry/types";
 
-import { appName as currentAppName, sdk } from "../crossPlatform";
+import { Platform } from "../platform";
+import { Logger } from "../utils/logger";
 
 /** UserAgent */
 export class System implements Integration {
@@ -19,10 +20,12 @@ export class System implements Integration {
    * @inheritDoc
    */
   public setupOnce(): void {
+    Logger.log('System setupOnce', ['init']);
     addGlobalEventProcessor((event: Event) => {
       if (getCurrentHub().getIntegration(System)) {
         try {
-          const systemInfo = sdk.getSystemInfoSync();
+          const systemInfo = Platform.getSDK().getSystemInfoSync();
+          const currentAppName = Platform.getAppName();
           const {
             SDKVersion = "0.0.0",
             batteryLevel, // 微信小程序
@@ -77,7 +80,7 @@ export class System implements Integration {
             }
           };
         } catch (e) {
-          console.warn(`sentry-miniapp get system info fail: ${e}`);
+          console.warn(`sentry-miniprogram get system info fail: ${e}`);
         }
       }
 

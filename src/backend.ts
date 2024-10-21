@@ -4,11 +4,19 @@ import { addExceptionMechanism, resolvedSyncPromise } from '@sentry/utils';
 
 import { eventFromString, eventFromUnknownInput } from './eventbuilder';
 import { XHRTransport } from "./transports/index";
+import { PlatformOptions } from "./platform";
+
 
 /**
  * 用户可配置的参数信息
  */
 export interface MiniappOptions extends Options {
+  /**
+   * 小程序平台类型
+   * 若是传入，则依据传入值初始化平台特有的配置。不会走默认的初始化逻辑
+   */
+  platform?: PlatformOptions;
+
   /**
    * 黑名单 - 不上报错误
    */
@@ -49,7 +57,8 @@ export class MiniappBackend extends BaseBackend<MiniappOptions> {
   }
 
   /**
-   * @inheritDoc 辅助函数，真正运行时再看是什么
+   * @inheritDoc 处理异常并将其转换为事件
+   * - 捕获到异常调用
    */
   public eventFromException(exception: any, hint?: EventHint): PromiseLike<Event> {
     const syntheticException = (hint && hint.syntheticException) || undefined;
@@ -67,7 +76,8 @@ export class MiniappBackend extends BaseBackend<MiniappOptions> {
     return resolvedSyncPromise(event);
   }
   /**
-   * @inheritDoc 辅助函数，真正运行时再看是什么
+   * @inheritDoc 处理消息并将其转换为事件
+   * - 捕获到异常调用
    */
   public eventFromMessage(message: string, level: Severity = Severity.Info, hint?: EventHint): PromiseLike<Event> {
     const syntheticException = (hint && hint.syntheticException) || undefined;

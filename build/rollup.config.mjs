@@ -1,7 +1,8 @@
-import typescript from '@rollup/plugin-typescript'
-import terser from '@rollup/plugin-terser'
+import typescript from '@rollup/plugin-typescript';
+import json from '@rollup/plugin-json';
+import terser from '@rollup/plugin-terser';
 import resolve from "@rollup/plugin-node-resolve";
-import commonjs from '@rollup/plugin-commonjs' // 处理 common 模块js
+import commonjs from '@rollup/plugin-commonjs'; // 处理 common 模块js
 import dts from 'rollup-plugin-dts';
 export default {
   input: 'src/main.ts',
@@ -34,5 +35,6 @@ export default {
       tsconfig: "./tsconfig.json",
     }),
     resolve(),
+    json()
   ]
 };

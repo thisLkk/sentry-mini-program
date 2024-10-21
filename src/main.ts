@@ -37,6 +37,4 @@ export {
   
 export { init } from "./sdk";
 import * as Integrations from "./integrations/index";
-
 export { Integrations };
-  

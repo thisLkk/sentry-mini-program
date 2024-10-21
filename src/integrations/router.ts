@@ -1,5 +1,6 @@
 import { addGlobalEventProcessor, getCurrentHub } from "@sentry/core";
 import { Event, Integration } from "@sentry/types";
+import { Logger } from "../utils/logger";
 
 declare const getCurrentPages: any;
 
@@ -27,6 +28,7 @@ export class Router implements Integration {
    * @inheritDoc
    */
   public constructor(options?: RouterIntegrations) {
+    Logger.log('Router constructor', ['init']); 
     this._options = {
       enable: true,
       ...options,
@@ -56,7 +58,7 @@ export class Router implements Integration {
               },
             };
           } catch (e) {
-            console.warn(`sentry-miniapp get router info fail: ${e}`);
+            console.warn(`sentry-miniprogram get router info fail: ${e}`);
           }
         }
       }

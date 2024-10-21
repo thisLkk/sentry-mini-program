@@ -1,7 +1,7 @@
 import { getCurrentHub } from "@sentry/core";
 import { Integration } from "@sentry/types";
-import { logger } from "@sentry/utils";
-import { sdk } from "../crossPlatform";
+import { Platform } from "../platform";
+import { Logger } from "../utils/logger";
 interface GlobalHandlersIntegrations {
   onerror: boolean;
   onunhandledrejection: boolean;
@@ -19,6 +19,7 @@ export class GlobalHandlers implements Integration {
   private _onPageNotFoundHandlerInstalled: boolean = false;
   private _onMemoryWarningHandlerInstalled: boolean = false;
   public constructor(options?: GlobalHandlersIntegrations) {
+    Logger.log('GlobalHandlers constructor', ['init']);
     this._options = {
       onerror: true,
       onunhandledrejection: true,
@@ -29,19 +30,15 @@ export class GlobalHandlers implements Integration {
   }
   public setupOnce(): void {
     if (this._options.onerror) {
-      logger.log("Global Handler attached: onError");
       this._installGlobalOnErrorHandler();
     }
     if (this._options.onunhandledrejection) {
-      logger.log("Global Handler attached: onunhandledrejection");
       this._installGlobalOnUnhandledRejectionHandler();
     }
     if (this._options.onpagenotfound) {
-      logger.log("Global Handler attached: onPageNotFound");
       this._installGlobalOnPageNotFoundHandler();
     }
     if (this._options.onmemorywarning) {
-      logger.log("Global Handler attached: onMemoryWarning");
       this._installGlobalOnMemoryWarningHandler();
     }
   }
@@ -50,10 +47,10 @@ export class GlobalHandlers implements Integration {
     if (this._onErrorHandlerInstalled) {
       return;
     }
-    if (!!sdk.onError) {
+    const onError = Platform.getSDK().onError;
+    if (!!onError) {
       const currentHub = getCurrentHub();
-      sdk.onError((err: string | object) => {
-        console.info("【sentry-mini-program】=======>", err);
+      onError((err: string | object) => {
         const error = typeof err === 'string' ? new Error(err) : err
         currentHub.captureException(error);
       });
@@ -65,13 +62,14 @@ export class GlobalHandlers implements Integration {
     if (this._onUnhandledRejectionHandlerInstalled) {
       return;
     }
-    if (!!sdk.onUnhandledRejection) {
+    const onUnhandledRejection = Platform.getSDK().onUnhandledRejection;
+    if (!!onUnhandledRejection) {
       const currentHub = getCurrentHub();
       interface OnUnhandledRejectionRes {
         reason: string | object;
         promise: Promise<any>;
       }
-      sdk.onUnhandledRejection(
+      onUnhandledRejection(
         ({ reason, promise }: OnUnhandledRejectionRes) => {
           // 为什么官方文档上说 reason 是 string 类型，但是实际返回的确实 object 类型
           const error = typeof reason === 'string' ? new Error(reason) : reason
@@ -88,9 +86,10 @@ export class GlobalHandlers implements Integration {
     if (this._onPageNotFoundHandlerInstalled) {
       return;
     }
-    if (!!sdk.onPageNotFound) {
+    const onPageNotFound = Platform.getSDK().onPageNotFound;
+    if (!!onPageNotFound) {
       const currentHub = getCurrentHub();
-      sdk.onPageNotFound((res: { path: string }) => {
+      onPageNotFound((res: { path: string }) => {
         const url = res.path.split("?")[0];
         currentHub.setTag("pagenotfound", url);
         currentHub.setExtra("message", JSON.stringify(res));
@@ -104,9 +103,10 @@ export class GlobalHandlers implements Integration {
     if (this._onMemoryWarningHandlerInstalled) {
       return;
     }
-    if (!!sdk.onMemoryWarning) {
+    const onMemoryWarning = Platform.getSDK().onMemoryWarning;
+    if (!!onMemoryWarning) {
       const currentHub = getCurrentHub();
-      sdk.onMemoryWarning(({ level = -1 }: { level: number }) => {
+      onMemoryWarning(({ level = -1 }: { level: number }) => {
         let levelMessage = "没有获取到告警级别信息";
         switch (level) {
           case 5:

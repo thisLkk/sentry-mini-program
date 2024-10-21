@@ -1,7 +1,7 @@
 import { addGlobalEventProcessor, getCurrentHub } from "@sentry/core";
 import { Event, Integration } from "@sentry/types";
-
-import { appName, sdk } from "../crossPlatform";
+import { Platform } from "../platform";
+import { Logger } from "../utils/logger";
 
 /**
  * IgnoreMpcrawlerErrors
@@ -24,13 +24,16 @@ export class IgnoreMpcrawlerErrors implements Integration {
    * @inheritDoc
    */
   public setupOnce(): void {
+    Logger.log('IgnoreMpcrawlerErrors setupOnce', ['init']);
     addGlobalEventProcessor((event: Event) => {
+      const currentAppName = Platform.getAppName();
+      const currentSdk = Platform.getSDK();
       if (
         getCurrentHub().getIntegration(IgnoreMpcrawlerErrors) &&
-        appName === "wechat" &&
-        sdk.getLaunchOptionsSync
+        currentAppName === "weapp" &&
+        currentSdk.getLaunchOptionsSync
       ) {
-        const options = sdk.getLaunchOptionsSync();
+        const options = currentSdk.getLaunchOptionsSync();
 
         if (options.scene === 1129) {
           return null;
