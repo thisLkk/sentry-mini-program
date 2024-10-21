@@ -1,6 +1,6 @@
 {
   "name": "@xc/sentry-mini-program",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "main": "lib/esm/index.js",
   "module": "lib/index.js",
   "type": "commonjs",
@@ -38,5 +38,7 @@
   "publishConfig": {
     "registry": "http://npm.ixiaochuan.cn"
   },
+  "homepage": "https://git.ixiaochuan.cn/FE/sentry_mini_program",
+  "readme": "https://git.ixiaochuan.cn/FE/sentry_mini_program/blob/master/README.md",
   "author": "lukuankuan2014@xiaochuankeji.cn"
 }
