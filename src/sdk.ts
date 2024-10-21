@@ -36,4 +36,3 @@ export function init(options: MiniappOptions = {}): void {
   initAndBind(MiniappClient, options);
   Logger.log('Sentry Mini Program', ['SDK init success']);
 }
-  
