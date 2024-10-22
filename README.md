@@ -16,27 +16,82 @@
 需要业务自行上报。
 
 ```js
-import Sentry from '@xc/sentry-mini-program'
+import * as Sentry from '@xc/sentry-mini-program'
 
-// 请根据业务代码仓库运行，自行决定是否指定platform （如业务代码错误的注入了多个平台的sdk，那么platform建议指定）
-Sentry.init({
-  // [platform] 若是指定，包内的sdk会强制绑定这个平台，若不指定，包会自行判断
-  platform: 'tt', // 
-  dsn: '',
-  environment: '',
-  beforeSend: () => {},
-})
+import {getMiniProgramEnv, isWX, isXHS} from '../primitive'
+import {beforeSend} from './filter' // 需要自行实现
 
-// 业务代码内，自行上报 
-// 如： app.ts
-  useUnhandledRejection((err) => {
+const DSN =
+  'https://c82e77e0222648dcaac2240e5503fd27@sentry-v2.ixiaochuan.cn/114'
+
+const caniUseSentry = () => {
+  // 暂时sdk支持这三个平台，快手平台需要验证添加。抖音还未验证
+  const usePlatform = isXHS || isWX
+  // 可以评估是否只对生产模式有效
+  // if (usePlatform && process.env.NODE_ENV === 'production') {
+  if (usePlatform) {
+    return true
+  }
+  return false
+}
+// 在入口执行这个函数，或者在这里自执行下。依据获取的参数时机选择
+export const initSentry = () => {
+  const {envType, mpVersion} = getMiniProgramEnv()
+  if (caniUseSentry()) {
+    Sentry.init({
+      platform: process.env.TARO_ENV, // 传入这个字段。sdk包会将sentry小程序平台指向此环境
+      dsn: DSN,
+      environment: envType,
+      beforeSend: beforeSend, // 根据需求自行选择是否需要
+    })
+    Sentry.configureScope((scope) => {
+      scope.setTags({
+        mini_program_name: PLATFORM_ENV_STRING,
+        mp_version: mpVersion,
+        is_vip: 'unknown', // 初始化时用户信息还未生成，故在beforeSend时机进行赋值
+        mid: 'unknown', // 初始化时用户信息还未生成，故在beforeSend时机进行赋值
+      })
+      // 初始化时用户信息还未生成，故在beforeSend时机进行赋值
+      scope.setUser({
+        mid: 'unknown',
+        name: 'unknown',
+      })
+      scope.setExtras({
+        project_name: 'yootang-lite',
+        mini_program_name: PLATFORM_ENV_STRING,
+        mp_version: mpVersion,
+        mid: 'unknown', // 初始化时用户信息还未生成，故在beforeSend时机进行赋值
+      })
+    })
+  }
+}
+
+// 主动上报异常，建议通过这个函数上报，方便收口
+export const SentryCaptureException = (err: any) => {
+  if (caniUseSentry()) {
     Sentry.captureException(err)
+  }
+}
+
+
+// app.ts 入口执行
+function App(props) {
+  initSentry() // 初始化 Sentry
+  const indexQueryParams = useQuery()
+
+  useUnhandledRejection((err) => {
+    console.log('【app-useUnhandledRejection-rejectErr】 ==========> ', err)
+    SentryCaptureException(err)
   })
   useError((err) => {
-    Sentry.captureException(err)
+    console.log('【app-useError-rejectErr】 ==========> ', err)
+    SentryCaptureException(err)
   })
-// 接口统一上报， 可以将非0的请求统一上报
+
+}
 ```
+
+
 
 ### 微信等原生小程序接入
 
