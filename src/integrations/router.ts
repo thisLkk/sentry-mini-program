@@ -1,5 +1,7 @@
 import { addGlobalEventProcessor, getCurrentHub } from "@sentry/core";
 import { Event, Integration } from "@sentry/types";
+import { Platform } from "../platform";
+import { parseQueryString } from "../utils/helper";
 
 declare const getCurrentPages: any;
 
@@ -42,10 +44,17 @@ export class Router implements Integration {
         if (this._options.enable) {
           try {
             const routers = getCurrentPages().map(
-              (route: { route: string; options: object }) => ({
-                route: route.route,
-                options: route.options,
-              })
+              (route: { route: string; options: object; data: any }) => {
+                let options = route.options
+                // 小红书没有 options 字段
+                if (Platform.getAppName() === 'xhs' && route?.data?.root?.uid) {
+                  options = parseQueryString(route.data.root.uid)
+                }
+                return {
+                  route: route.route,
+                  options: options,
+                }
+              }
             );
 
             return {

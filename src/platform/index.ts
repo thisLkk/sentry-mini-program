@@ -1,5 +1,6 @@
 declare const wx: any; // 微信小程序、微信小游戏
 declare const tt: any; // 字节小程序
+declare const xhs: any; // 小红书小程序
 export type PlatformOptions = "tt" | "weapp" | "xhs" | "kwai" | "swan" | "alipay" | "h5" | "rn" | "quickapp" | "qq" | "jd"; // 扩展平台选项
 
 interface SDK {
@@ -11,6 +12,9 @@ interface SDK {
   onPageNotFound?: Function;
   onMemoryWarning?: Function;
   getLaunchOptionsSync?: Function;
+  getAppBaseInfo?: Function;
+  getDeviceInfo?: Function;
+  getWindowInfo?: Function;
 }
 
 // 单例模式 确保sdk和appName只初始化一次
@@ -23,30 +27,38 @@ export class Platform {
     Platform.initSDK(options);
   }
 
-  private static setupDefaultPlatform = () => {
-    if (typeof wx === "object") {
-      Platform._SDK = wx;
-      Platform._appName = 'weapp';
-    } else if (typeof tt === "object") {
-      Platform._SDK = tt;
-      Platform._appName = 'tt';
-    } else {
-      throw new Error("***sentry-miniprogram*** 暂不支持此平台");
-    }
+  private static setupPlatform = (sdk: any, appName: PlatformOptions) => {
+    Platform._SDK = sdk;
+    Platform._appName = appName;
     console.log(`【Sentry-mini-program】当前运行环境为: `, Platform._appName, Platform._SDK);
   };
 
-  private static setupUserPlatform = (options: PlatformOptions) => {
-    if (options === 'weapp') {
-      Platform._SDK = wx;
-      Platform._appName = 'weapp';
-    } else if (options === 'tt') {
-      Platform._SDK = tt;
-      Platform._appName = 'tt';
+  private static setupDefaultPlatform = () => {
+    if (typeof wx === "object") {
+      Platform.setupPlatform(wx, 'weapp');
+    } else if (typeof tt === "object") {
+      Platform.setupPlatform(tt, 'tt');
+    } else if (typeof xhs === "object") {
+      Platform.setupPlatform(xhs, 'xhs');
     } else {
       throw new Error("***sentry-miniprogram*** 暂不支持此平台");
     }
-    console.log(`【Sentry-mini-program】当前运行环境为: `, Platform._appName, Platform._SDK);
+  };
+
+  private static setupUserPlatform = (options: PlatformOptions) => {
+    switch (options) {
+      case 'weapp':
+        Platform.setupPlatform(wx, 'weapp');
+        break;
+      case 'tt':
+        Platform.setupPlatform(tt, 'tt');
+        break;
+      case 'xhs':
+        Platform.setupPlatform(xhs, 'xhs');
+        break;
+      default:
+        throw new Error("***sentry-miniprogram*** 暂不支持此平台");
+    }
   };
 
   private static initSDK(options?: PlatformOptions): void {

@@ -18,7 +18,7 @@ export class XHRTransport extends BaseTransport {
         request({
           url: this.url,
           method: "POST",
-          data: JSON.stringify(event),
+          data: event,
           header: {
             "content-type": "application/json"
           },
