@@ -16,7 +16,7 @@
 需要业务自行上报。
 
 ```js
-import Sentry from '@lu-kk/sentry-mini-program'
+import Sentry from '@xc/sentry-mini-program'
 
 // 请根据业务代码仓库运行，自行决定是否指定platform （如业务代码错误的注入了多个平台的sdk，那么platform建议指定）
 Sentry.init({
