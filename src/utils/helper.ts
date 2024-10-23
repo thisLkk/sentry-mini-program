@@ -1,24 +1,41 @@
+import { isError, isErrorEvent, isPlainObject } from "@sentry/utils";
+
 export function parseQueryString(url: string): Record<string, string> {
-    const queryString = url.split('?')[1];
-    if (!queryString) {
-      return {};
-    }
-  
-    return queryString.split('&').reduce((acc, param) => {
-      const [key, value] = param.split('=');
-      acc[key] = decodeURIComponent(value);
-      return acc;
-    }, {} as Record<string, string>);
+  const queryString = url.split('?')[1];
+  if (!queryString) {
+    return {};
   }
-  
+
+  return queryString.split('&').reduce((acc, param) => {
+    const [key, value] = param.split('=');
+    acc[key] = decodeURIComponent(value);
+    return acc;
+  }, {} as Record<string, string>);
+}
+
 export function mergeObjectsWithFixedLength(obj1: Record<string, any>, obj2: Record<string, any>): Record<string, any> {
-    const result = { ...obj1 };
-  
-    for (const key in obj1) {
-      if (obj2.hasOwnProperty(key)) {
-        result[key] = obj2[key];
-      }
+  const result = { ...obj1 };
+
+  for (const key in obj1) {
+    if (obj2.hasOwnProperty(key)) {
+      result[key] = obj2[key];
     }
-  
-    return result;
   }
+
+  return result;
+}
+
+/**
+ * 获取错误类型,并对于错误类型进行处理
+ * @param error 多数为string与object，这放宽松为any
+ * @returns 返回error对象
+ */
+export function getErrorTypeValue(error: any): any {
+  if (isErrorEvent(error) || isError(error)) {
+    return error
+  }
+  if(isPlainObject(error) || typeof error === 'string') {
+    return new Error(JSON.stringify(error))
+  }
+  return error
+}

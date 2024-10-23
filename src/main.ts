@@ -36,5 +36,6 @@ export {
 } from "@sentry/core";
   
 export { init } from "./sdk";
+export { getErrorTypeValue } from "./utils/helper";
 import * as Integrations from "./integrations/index";
 export { Integrations };

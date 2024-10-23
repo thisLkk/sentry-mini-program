@@ -1,6 +1,7 @@
 import { getCurrentHub } from "@sentry/core";
 import { Integration } from "@sentry/types";
 import { Platform } from "../platform";
+import { getErrorTypeValue } from "../utils/helper";
 interface GlobalHandlersIntegrations {
   onerror: boolean;
   onunhandledrejection: boolean;
@@ -49,8 +50,7 @@ export class GlobalHandlers implements Integration {
     if (!!onError) {
       const currentHub = getCurrentHub();
       onError((err: string | object) => {
-        const error = typeof err === 'string' ? new Error(err) : err
-        currentHub.captureException(error);
+        currentHub.captureException(getErrorTypeValue(err));
       });
     }
     this._onErrorHandlerInstalled = true;
@@ -70,8 +70,7 @@ export class GlobalHandlers implements Integration {
       onUnhandledRejection(
         ({ reason, promise }: OnUnhandledRejectionRes) => {
           // 为什么官方文档上说 reason 是 string 类型，但是实际返回的确实 object 类型
-          const error = typeof reason === 'string' ? new Error(reason) : reason
-          currentHub.captureException(error, {
+          currentHub.captureException(getErrorTypeValue(reason), {
             data: promise,
           });
         }
