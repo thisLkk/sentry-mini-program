@@ -1,6 +1,6 @@
 {
   "name": "@xc/sentry-mini-program",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "main": "lib/esm/index.js",
   "module": "lib/index.js",
   "type": "commonjs",

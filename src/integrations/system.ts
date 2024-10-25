@@ -23,6 +23,7 @@ export class System implements Integration {
   private _handleSystemInfo() {
     // https://developers.weixin.qq.com/miniprogram/dev/api/base/system/wx.getAppBaseInfo.html
     let appBaseInfo = {
+      appName​: '', // 宿主环境 tt 有使用
       SDKVersion: '', // 客户端基础库版本
       host: '', // 当前小程序运行的宿主环境
       language: '', // 客户端语言
@@ -48,21 +49,23 @@ export class System implements Integration {
       statusBarHeight: '', // 状态栏的高度
       screenTop: '', // 窗口上边缘的y值
     }
-    if (Platform.getAppName() === 'weapp') {
+    const appName = Platform.getAppName()
+    // 微信侧getSystemInfoSync不维护了
+    if (appName === 'weapp') {
       const sdk = Platform.getSDK();
       if (sdk) {
         appBaseInfo = sdk.getAppBaseInfo?.() || appBaseInfo;
         device = sdk.getDeviceInfo?.() || device;
         windowInfo = sdk.getWindowInfo?.() || windowInfo;
       }
+      return { appBaseInfo, device, windowInfo };
     }
-    if (Platform.getAppName() === 'xhs') {
-      const data = Platform.getSDK().getSystemInfoSync();
-      if (data) {
-        appBaseInfo = mergeObjectsWithFixedLength(appBaseInfo, data) as typeof appBaseInfo;
-        device = mergeObjectsWithFixedLength(device, data) as typeof device;
-        windowInfo = mergeObjectsWithFixedLength(windowInfo, data) as typeof windowInfo;
-      }
+    // 默认其他平台都支持 getSystemInfoSync 函数
+    const data = Platform.getSDK().getSystemInfoSync();
+    if (data) {
+      appBaseInfo = mergeObjectsWithFixedLength(appBaseInfo, data) as typeof appBaseInfo;
+      device = mergeObjectsWithFixedLength(device, data) as typeof device;
+      windowInfo = mergeObjectsWithFixedLength(windowInfo, data) as typeof windowInfo;
     }
     return { appBaseInfo, device, windowInfo };
   }
