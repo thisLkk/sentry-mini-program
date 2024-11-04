@@ -1,6 +1,7 @@
 declare const wx: any; // 微信小程序、微信小游戏
 declare const tt: any; // 字节小程序
 declare const xhs: any; // 小红书小程序
+declare const ks: any; // 快手小程序
 export type PlatformOptions = "tt" | "weapp" | "xhs" | "kwai" | "swan" | "alipay" | "h5" | "rn" | "quickapp" | "qq" | "jd"; // 扩展平台选项
 
 interface SDK {
@@ -40,6 +41,8 @@ export class Platform {
       Platform.setupPlatform(tt, 'tt');
     } else if (typeof xhs === "object") {
       Platform.setupPlatform(xhs, 'xhs');
+    } else if (typeof ks === "object") {
+      Platform.setupPlatform(ks, 'kwai');
     } else {
       throw new Error("***sentry-miniprogram*** 暂不支持此平台");
     }
@@ -55,6 +58,9 @@ export class Platform {
         break;
       case 'xhs':
         Platform.setupPlatform(xhs, 'xhs');
+        break;
+      case 'kwai':
+        Platform.setupPlatform(ks, 'kwai');
         break;
       default:
         throw new Error("***sentry-miniprogram*** 暂不支持此平台");

@@ -21,8 +21,7 @@ import * as Sentry from '@xc/sentry-mini-program'
 import {getMiniProgramEnv, isWX, isXHS} from '../primitive'
 import {beforeSend} from './filter' // 需要自行实现
 
-const DSN =
-  'https://c82e77e0222648dcaac2240e5503fd27@sentry-v2.ixiaochuan.cn/114'
+const DSN = ''
 
 const caniUseSentry = () => {
   // 暂时sdk支持这三个平台，快手平台需要验证添加。抖音还未验证

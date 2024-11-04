@@ -13,12 +13,10 @@ import {
 } from "./integrations/index";
 
 export const defaultIntegrations = [
-  new CoreIntegrations.InboundFilters(),
   new CoreIntegrations.FunctionToString(),
   new TryCatch(),
   new GlobalHandlers(),
   new LinkedErrors(),
-
   new System(),
   new Router(),
   new IgnoreMpcrawlerErrors(),
