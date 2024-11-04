@@ -159,3 +159,67 @@ npm i *** // 业务包，需要自行clone、build、pub
 npx jest test/platform/index.test.ts
 ```
 
+## beforeSend 过滤
+```js
+
+// sentry 的过滤逻辑, 主要过滤一些不必要的报错
+import {getLoginInfo} from '~/reducer/account'
+
+const FILTER_ERRORS = [
+  'login fail',
+  'setClipboardData',
+  'background',
+  'dns error',
+  'time out',
+  'network not available',
+  'getUserProfile:fail auth deny', // 抖音 用户取消登录
+  '`Object` is not assignable to type `RequestResponse`', //快手开发者工具request错误，手机模式不会有
+]
+
+const INCLUDE_ERRORS = ['pay', 'order']
+
+export function beforeSend(event: any, hint) {
+  if (
+    !event ||
+    !event.exception ||
+    !event.exception.values ||
+    !event.exception.values.length
+  ) {
+    return null // 如果事件不包含异常信息，则不进行任何处理
+  }
+
+  const exceptionValues = event.exception.values
+
+  // 过滤错误消息
+  event.exception.values = exceptionValues.filter((value) => {
+    const errorMessage = value?.value || ''
+
+    // 检查是否包含需要排除的错误消息
+    for (const filterError of FILTER_ERRORS) {
+      if (errorMessage.toLowerCase().includes(filterError.toLowerCase())) {
+        return false // 如果匹配到需要过滤的错误消息，则移除该异常信息
+      }
+    }
+
+    // 检查是否包含需要包含的错误消息
+    for (const includeError of INCLUDE_ERRORS) {
+      if (errorMessage.toLowerCase().includes(includeError.toLowerCase())) {
+        return true // 如果匹配到需要包含的错误消息，则保留该异常信息
+      }
+    }
+
+    return true // 默认情况下保留异常信息
+  })
+  // 如果过滤后没有异常信息，则不发送sentry请求
+  if (event.exception.values.length === 0) {
+    return null
+  }
+  // 在这里赋值是由于初始化时Sentry还未获取到相关信息，所以在发送时获取
+  // 注意：若错误生成时，用户信息还未有，则上报时为 unknown
+  const loginInfo = getLoginInfo()
+  event.user.name = loginInfo.member_info?.name || 'unknown'
+  return event // 返回处理后的事件对象
+}
+
+
+```
