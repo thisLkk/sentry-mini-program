@@ -1,5 +1,5 @@
 {
-  "name": "@xc/sentry-mini-program",
+  "name": "@lu-kk/sentry-mini-program",
   "version": "1.0.15",
   "main": "lib/esm/index.js",
   "module": "lib/index.js",

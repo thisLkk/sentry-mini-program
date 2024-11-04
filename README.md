@@ -8,6 +8,8 @@
 ## 支持平台（可以增量支持）
 - 微信小程序
 - 字节小程序
+- 快手小程序
+- 小红书小程序
 - Taro 框架
 
 ### Trao小程序接入
@@ -16,10 +18,10 @@
 需要业务自行上报。
 
 ```js
-import * as Sentry from '@xc/sentry-mini-program'
+import Sentry from '***' // 业务包，需要自行clone、build、pub
 
 import {getMiniProgramEnv, isWX, isXHS} from '../primitive'
-import {beforeSend} from './filter' // 需要自行实现
+import {beforeSend} from './filter' // 需要自行在业务内实现
 
 const DSN = ''
 
@@ -37,29 +39,28 @@ const caniUseSentry = () => {
 export const initSentry = () => {
   const {envType, mpVersion} = getMiniProgramEnv()
   if (caniUseSentry()) {
+    const integrations: any[] = []
+    if (!isKwai) {
+      // TypeError r.mergeOptions is not a function 忽略快手开发者工具这个错误
+      integrations.push(new Sentry.Integrations.InboundFilters())
+    }
     Sentry.init({
       platform: process.env.TARO_ENV, // 传入这个字段。sdk包会将sentry小程序平台指向此环境
       dsn: DSN,
       environment: envType,
+      integrations,
       beforeSend: beforeSend, // 根据需求自行选择是否需要
     })
     Sentry.configureScope((scope) => {
       scope.setTags({
         mini_program_name: PLATFORM_ENV_STRING,
-        mp_version: mpVersion,
-        is_vip: 'unknown', // 初始化时用户信息还未生成，故在beforeSend时机进行赋值
-        mid: 'unknown', // 初始化时用户信息还未生成，故在beforeSend时机进行赋值
       })
       // 初始化时用户信息还未生成，故在beforeSend时机进行赋值
       scope.setUser({
-        mid: 'unknown',
         name: 'unknown',
       })
       scope.setExtras({
-        project_name: 'yootang-lite',
-        mini_program_name: PLATFORM_ENV_STRING,
-        mp_version: mpVersion,
-        mid: 'unknown', // 初始化时用户信息还未生成，故在beforeSend时机进行赋值
+        uid: 'unknown', // 初始化时用户信息还未生成，故在beforeSend时机进行赋值
       })
     })
   }
@@ -97,7 +98,7 @@ function App(props) {
 直接导入使用即可，无需指定platform
 
 ```js
-import Sentry from '@xc/sentry-mini-program'
+import Sentry from '***' // 业务包，需要自行clone、build、pub
 
 Sentry.init({
   dsn: '',
@@ -126,11 +127,6 @@ yarn：1.22.22
 # 安装nrm
 npm install -g nrm
 
-# 配置nrm
-nrm add xc http://npm.ixiaochuan.cn/
-nrm use xc
-nrm ls
-
 # 进入项目
 cd your-module-path
 ...
@@ -146,7 +142,7 @@ npm publish
 
 # 使用模块
 
-npm i @xc/sentry-mini-program 
+npm i *** // 业务包，需要自行clone、build、pub
 
 ```
 
