@@ -1,9 +1,9 @@
 # sentry-mini-program
-
+参考：sentry-miniapp 代码仓库而实现
 > 支持业务各平台小程序接入sentry的解决方案
 
 ## 注意
-这个仓库产出的包暂时只在自己公司使用（公网包没有更新），若外部使用可以fork这个仓库，自己产出包
+若外部使用可以fork这个仓库，自己产出包
 
 ## 支持平台（可以增量支持）
 - 微信小程序
@@ -135,7 +135,6 @@ cd your-module-path
 npm login 
 Username: lukuankuan
 Password: ********
-Email: lukuankuan@xiaochuankeji.cn
 
 # 认证通过之后，
 npm publish
